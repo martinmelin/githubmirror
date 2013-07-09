@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='githubmirror',
@@ -7,6 +7,6 @@ setup(
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     long_description=open('README.md').read(),
     entry_points={
-        'console_scripts': ['github-mirror = githubmirror:main'],
+        'console_scripts': ['github-mirror = githubmirror:cmd'],
     }
 )
