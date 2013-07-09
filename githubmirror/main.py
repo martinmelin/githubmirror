@@ -20,7 +20,7 @@ def setup_config_file(dir):
 
 def get_config_file(dir):
     if not os.path.isfile(get_workdir_path('.githubmirror', dir)):
-        setup_config_file()
+        setup_config_file(dir)
 
     with file('.githubmirror') as f:
         try:
