@@ -21,7 +21,7 @@ def cmd():
 
     workdir = args['--workdir']
     if workdir:
-        if not os.path.isdir(main.get_workdir_path(workdir)):
+        if not os.path.isdir(main.expand_workdir(workdir)):
             print >>sys.stderr, "Won't create the workdir for you!"
             raise SystemExit
     else:

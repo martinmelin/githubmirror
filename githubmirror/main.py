@@ -59,10 +59,12 @@ class FetchProgress(git.RemoteProgress):
         sys.stdout.flush()
 
 
+def expand_workdir(workdir):
+    return os.path.expanduser(os.path.expandvars(workdir))
+
+
 def get_workdir_path(filename, workdir):
-    workdir = os.path.expandvars(workdir)
-    workdir = os.path.expanduser(workdir)
-    return os.path.join(workdir, filename)
+    return os.path.join(expand_workdir(workdir), filename)
 
 
 def get_repo_path(repo_name, workdir):
