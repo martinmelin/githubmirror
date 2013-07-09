@@ -6,7 +6,7 @@ setup(
     packages=['githubmirror', ],
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     description='A small script to keep a copy of every repo in a Github org.',
-    long_description=open('README').read(),
+    long_description=open('README.rst').read(),
     install_requires=open('requirements.txt').read(),
     author='Martin Melin',
     author_email='martin@tictail.com',
