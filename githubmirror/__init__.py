@@ -10,6 +10,7 @@ Options:
     --only-repo=repo  Will only sync <org>/<repo> instead of every repo
 """
 import os
+import sys
 import docopt
 
 import main
@@ -19,7 +20,11 @@ def cmd():
     args = docopt.docopt(__doc__)
 
     workdir = args['--workdir']
-    if not workdir:
+    if workdir:
+        if not os.path.isdir(workdir):
+            print >>sys.stderr, "Won't create the workdir for you!"
+            raise SystemExit
+    else:
         workdir = os.getcwd()
 
     org = main.get_organization(args['<organization>'], workdir)
