@@ -10,8 +10,8 @@ import github
 def setup_config_file(workdir):
     config = dict()
     with open(get_workdir_path('.githubmirror', workdir), 'w') as config_file:
-        prompt = ("Please give me a Github API token "
-                  "(create on https://github.com/settings/applications): ")
+        prompt = ("Please give me a Github API token, "
+                  "create on https://github.com/settings/applications : ")
         auth_token = raw_input(prompt)
         config = dict(auth_token=auth_token)
         json.dump(config, config_file)
