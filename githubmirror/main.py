@@ -79,8 +79,9 @@ def init_repos(repos, dir):
 
 def fetch(repos, dest):
     for repo in repos:
-        gitdir = git.Repo.init(get_repo_path(repo.name, dir), bare=True)
+        path = get_repo_path(repo.name, dir)
+        gitdir = git.Repo.init(path, bare=True)
         remote = gitdir.remote(name='origin')
-        print ("Fetching %s..." % repo.name),
+        print ("Fetching %s in %s..." % (repo.name, path)),  # to avoid newline
         remote.fetch(progress=FetchProgress())
         print ""
