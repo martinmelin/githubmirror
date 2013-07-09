@@ -31,7 +31,8 @@ def cmd():
     if args['init']:
         main.init_repos(repos, workdir)
 
-    main.fetch(repos, workdir)
+    if args['sync']:
+        main.fetch(repos, workdir)
 
 if __name__ == '__main__':
     cmd()
