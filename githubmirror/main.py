@@ -60,7 +60,7 @@ class FetchProgress(git.RemoteProgress):
 
 
 def get_workdir_path(filename, dir):
-    return os.path.join(os.getcwd(), filename)
+    return os.path.join(dir, filename)
 
 
 def get_repo_path(repo_name, dir):
