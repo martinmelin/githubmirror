@@ -60,6 +60,8 @@ class FetchProgress(git.RemoteProgress):
 
 
 def get_workdir_path(filename, workdir):
+    workdir = os.path.expandvars(workdir)
+    workdir = os.path.expanduser(workdir)
     return os.path.join(workdir, filename)
 
 
