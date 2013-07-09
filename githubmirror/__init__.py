@@ -22,7 +22,7 @@ def cmd():
     if not dir:
         dir = os.getcwd()
 
-    org = main.get_organization(args['<organization>'])
+    org = main.get_organization(args['<organization>'], dir)
     if args['--only-repo']:
         repos = [org.get_repo(args['--only-repo'])]
     else:
@@ -32,3 +32,6 @@ def cmd():
         main.init_repos(repos, dir)
 
     main.fetch(repos, dir)
+
+if __name__ == '__main__':
+    cmd()

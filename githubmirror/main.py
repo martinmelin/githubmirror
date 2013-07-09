@@ -4,40 +4,44 @@ import os
 import sys
 import git
 import json
-import docopt
 import github
 
 
-def setup_config_file():
-    with file('.githubmirror', 'w') as f:
+def setup_config_file(dir):
+    config = dict()
+    with open(get_workdir_path('.githubmirror', dir), 'w') as config_file:
         prompt = ("Please give me a Github API token "
                   "(create on https://github.com/settings/applications): ")
         auth_token = raw_input(prompt)
-        c = dict(auth_token=auth_token)
-        json.dump(c, f)
+        config = dict(auth_token=auth_token)
+        json.dump(config, config_file)
+    return config
 
 
-def get_config_file():
-    if not os.path.isfile('.githubmirror'):
+def get_config_file(dir):
+    if not os.path.isfile(get_workdir_path('.githubmirror', dir)):
         setup_config_file()
 
     with file('.githubmirror') as f:
-        c = json.load(f)
-        return c
+        try:
+            config = json.load(f)
+        except ValueError:
+            return setup_config_file(dir)
+        return config
 
 
-def get_auth_token():
-    config = get_config_file()
+def get_auth_token(dir):
+    config = get_config_file(dir)
     return config.get('auth_token')
 
 
-def get_github_client():
-    token = get_auth_token()
+def get_github_client(dir):
+    token = get_auth_token(dir)
     return github.Github(token)
 
 
-def get_organization(organization_name):
-    gh = get_github_client()
+def get_organization(organization_name, dir):
+    gh = get_github_client(dir)
     org = None
     while not org:
         try:
@@ -55,8 +59,12 @@ class FetchProgress(git.RemoteProgress):
         sys.stdout.flush()
 
 
+def get_workdir_path(filename, dir):
+    return os.path.join(os.getcwd(), filename)
+
+
 def get_repo_path(repo_name, dir):
-    return os.path.join(os.getcwd(), "%s.git" % repo_name)
+    return get_workdir_path("%s.git" % repo_name, dir)
 
 
 def init_repos(repos, dir):
