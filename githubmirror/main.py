@@ -46,9 +46,9 @@ def get_organization(organization_name, dir):
     while not org:
         try:
             org = gh.get_organization(organization_name)
-        except github.GithubException:
-            print >>sys.stderr, "Github did not accept this API token!"
-            setup_config_file()
+        except github.GithubException as e:
+            print >>sys.stderr, "Github error: %s" % e
+            setup_config_file(dir)
     return org
 
 
