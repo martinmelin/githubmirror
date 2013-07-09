@@ -18,20 +18,20 @@ import main
 def cmd():
     args = docopt.docopt(__doc__)
 
-    dir = args['--workdir']
-    if not dir:
-        dir = os.getcwd()
+    workdir = args['--workdir']
+    if not workdir:
+        workdir = os.getcwd()
 
-    org = main.get_organization(args['<organization>'], dir)
+    org = main.get_organization(args['<organization>'], workdir)
     if args['--only-repo']:
         repos = [org.get_repo(args['--only-repo'])]
     else:
         repos = org.get_repos()
 
     if args['init']:
-        main.init_repos(repos, dir)
+        main.init_repos(repos, workdir)
 
-    main.fetch(repos, dir)
+    main.fetch(repos, workdir)
 
 if __name__ == '__main__':
     cmd()
