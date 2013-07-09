@@ -22,7 +22,7 @@ def get_config_file(workdir):
     if not os.path.isfile(get_workdir_path('.githubmirror', workdir)):
         setup_config_file(workdir)
 
-    with file('.githubmirror') as f:
+    with file(get_workdir_path('.githubmirror', workdir)) as f:
         try:
             config = json.load(f)
         except ValueError:
@@ -84,6 +84,6 @@ def fetch(repos, workdir):
         path = get_repo_path(repo.name, workdir)
         gitdir = git.Repo.init(path, bare=True)
         remote = gitdir.remote(name='origin')
-        print ("Fetching %s to %s..." % (repo.ssh_url, path)),  # to avoid newline
+        print ("Fetching %s in %s..." % (repo.ssh_url, path)),  # to avoid newline
         remote.fetch(progress=FetchProgress())
         print ""
