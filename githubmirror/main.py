@@ -80,10 +80,10 @@ def init_repos(repos, workdir):
         try:
             remote = gitdir.remote(remote_name)
             gitdir.delete_remote(remote)
-        except ValueError, git.exc.GitCommandError:
+        except (ValueError, git.exc.GitCommandError):
             pass
 
-        gitdir.create_remote(remote_name, url, mirror=True)
+        gitdir.git.remote("add", "--mirror", remote_name, url)
 
 
 def fetch(repos, workdir):
