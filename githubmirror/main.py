@@ -6,6 +6,8 @@ import git
 import json
 import github
 
+REMOTE_NAME = 'origin'
+
 
 def setup_config_file(workdir):
     config = dict()
@@ -52,13 +54,6 @@ def get_organization(organization_name, workdir):
     return org
 
 
-class FetchProgress(git.RemoteProgress):
-    def update(self, op_code, cur_count, max_count=None, message=''):
-        # Ignore the details, just give an indication that we haven't hung:
-        sys.stdout.write(".")
-        sys.stdout.flush()
-
-
 def expand_workdir(workdir):
     return os.path.expanduser(os.path.expandvars(workdir))
 
@@ -72,25 +67,22 @@ def get_repo_path(repo_name, workdir):
 
 
 def init_repos(repos, workdir):
-    remote_name = 'origin'
     for repo in repos:
         url = repo.ssh_url
         gitdir = git.Repo.init(get_repo_path(repo.name, workdir), bare=True)
         # Cleanup existing origin, if any
         try:
-            remote = gitdir.remote(remote_name)
+            remote = gitdir.remote(REMOTE_NAME)
             gitdir.delete_remote(remote)
         except (ValueError, git.exc.GitCommandError):
             pass
 
-        gitdir.git.remote("add", "--mirror", remote_name, url)
+        gitdir.git.remote("add", "--mirror", REMOTE_NAME, url)
 
 
 def fetch(repos, workdir):
     for repo in repos:
         path = get_repo_path(repo.name, workdir)
         gitdir = git.Repo.init(path, bare=True)
-        remote = gitdir.remote(name='origin')
-        print ("Fetching %s in %s..." % (repo.ssh_url, path)),  # to avoid newline
-        remote.fetch(progress=FetchProgress())
-        print ""
+        print ("Fetching %s in %s..." % (repo.ssh_url, path))
+        gitdir.git.fetch(REMOTE_NAME)
