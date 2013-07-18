@@ -72,13 +72,18 @@ def get_repo_path(repo_name, workdir):
 
 
 def init_repos(repos, workdir):
+    remote_name = 'origin'
     for repo in repos:
         url = repo.ssh_url
         gitdir = git.Repo.init(get_repo_path(repo.name, workdir), bare=True)
+        # Cleanup existing origin, if any
         try:
-            gitdir.create_remote('origin', url)
-        except git.exc.GitCommandError:
+            remote = gitdir.remote(remote_name)
+            gitdir.delete_remote(remote)
+        except ValueError, git.exc.GitCommandError:
             pass
+
+        gitdir.create_remote(remote_name, url, mirror=True)
 
 
 def fetch(repos, workdir):
