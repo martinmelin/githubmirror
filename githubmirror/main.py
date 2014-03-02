@@ -3,54 +3,37 @@
 import os
 import sys
 import git
-import json
 import github
+import keyring  # https://pypi.python.org/pypi/keyring
 
 REMOTE_NAME = 'origin'
 
 
-def setup_config_file(workdir):
-    config = dict()
-    with open(get_workdir_path('.githubmirror', workdir), 'w') as config_file:
-        prompt = ("Please give me a Github API token, "
-                  "create on https://github.com/settings/applications : ")
-        auth_token = raw_input(prompt)
-        config = dict(auth_token=auth_token)
-        json.dump(config, config_file)
-    return config
+def store_auth_token(organization_name):
+    prompt = ("Please give me a Github API token, "
+              "create on https://github.com/settings/applications : ")
+    auth_token = raw_input(prompt)
+    keyring.set_password('githubmirror', organization_name, auth_token)
 
 
-def get_config_file(workdir):
-    if not os.path.isfile(get_workdir_path('.githubmirror', workdir)):
-        setup_config_file(workdir)
-
-    with file(get_workdir_path('.githubmirror', workdir)) as f:
-        try:
-            config = json.load(f)
-        except ValueError:
-            return setup_config_file(workdir)
-        return config
+def get_auth_token(organization_name):
+    return keyring.get_password('githubmirror', organization_name)
 
 
-def get_auth_token(workdir):
-    config = get_config_file(workdir)
-    return config.get('auth_token')
-
-
-def get_github_client(workdir):
-    token = get_auth_token(workdir)
+def get_github_client(organization_name):
+    token = get_auth_token(organization_name)
     return github.Github(token)
 
 
-def get_organization(organization_name, workdir):
-    gh = get_github_client(workdir)
+def get_organization(organization_name):
+    gh = get_github_client(organization_name)
     org = None
     while not org:
         try:
             org = gh.get_organization(organization_name)
         except github.GithubException as e:
             print >>sys.stderr, "Github error: %s" % e
-            setup_config_file(workdir)
+            store_auth_token(organization_name)
     return org
 
 
