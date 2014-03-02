@@ -17,17 +17,16 @@ def setup_config():
     keyring.set_password('githubmirror_token', 'githubmirror', auth_token)
 
 
-def get_auth_token(workdir):
+def get_auth_token():
     return keyring.get_password('githubmirror_token', 'githubmirror')
 
 
-def get_github_client(workdir):
-    token = get_auth_token(workdir)
-    return github.Github(token)
+def get_github_client():
+    return github.Github(get_auth_token())
 
 
-def get_organization(organization_name, workdir):
-    gh = get_github_client(workdir)
+def get_organization(organization_name):
+    gh = get_github_client()
     org = None
     while not org:
         try:
