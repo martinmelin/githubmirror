@@ -2,7 +2,6 @@
 
 import os
 import sys
-import json
 import git
 import github
 import keyring  # https://pypi.python.org/pypi/keyring
@@ -10,30 +9,31 @@ import keyring  # https://pypi.python.org/pypi/keyring
 REMOTE_NAME = 'origin'
 
 
-def setup_config():
+def store_auth_token(organization_name):
     prompt = ("Please give me a Github API token, "
-                  "create on https://github.com/settings/applications : ")
-    auth_token = raw_input(prompt).strip()
-    keyring.set_password('githubmirror_token', 'githubmirror', auth_token)
+              "create on https://github.com/settings/applications : ")
+    auth_token = raw_input(prompt)
+    keyring.set_password('githubmirror', organization_name, auth_token)
 
 
-def get_auth_token():
-    return keyring.get_password('githubmirror_token', 'githubmirror')
+def get_auth_token(organization_name):
+    return keyring.get_password('githubmirror', organization_name)
 
 
-def get_github_client():
-    return github.Github(get_auth_token())
+def get_github_client(organization_name):
+    token = get_auth_token(organization_name)
+    return github.Github(token)
 
 
 def get_organization(organization_name):
-    gh = get_github_client()
+    gh = get_github_client(organization_name)
     org = None
     while not org:
         try:
             org = gh.get_organization(organization_name)
         except github.GithubException as e:
             print >>sys.stderr, "Github error: %s" % e
-            setup_config()
+            store_auth_token(organization_name)
     return org
 
 

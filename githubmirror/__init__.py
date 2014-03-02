@@ -27,7 +27,7 @@ def cmd():
     else:
         workdir = os.getcwd()
 
-    org = main.get_organization(args['<organization>'], workdir)
+    org = main.get_organization(args['<organization>'])
     if args['--only-repo']:
         repos = [org.get_repo(args['--only-repo'])]
     else:
