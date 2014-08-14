@@ -65,24 +65,56 @@ def get_workdir_path(filename, workdir):
 def get_repo_path(repo_name, workdir):
     return get_workdir_path("%s.git" % repo_name, workdir)
 
+def print_failed(failed):
+    print "Failures encountered while processing:"
+    for repo in failed:
+        print ("    %s" % repo.name)
+
+def init_repo(repo, workdir):
+    path = get_repo_path(repo.name, workdir)
+    # Create accessor
+    gitdir = git.Repo.init(path, bare=True)
+    # Log about it
+    print ("Initializing %s..." % (repo.name))
+    # Cleanup existing origin, if any
+    try:
+        remote = gitdir.remote(REMOTE_NAME)
+        gitdir.delete_remote(remote)
+    except (ValueError, git.exc.GitCommandError) as e:
+        pass # can be ignored
+    # Add the remote
+    gitdir.git.remote("add", "--mirror", REMOTE_NAME, repo.ssh_url)
 
 def init_repos(repos, workdir):
+    failed = []
     for repo in repos:
-        url = repo.ssh_url
-        gitdir = git.Repo.init(get_repo_path(repo.name, workdir), bare=True)
-        # Cleanup existing origin, if any
         try:
-            remote = gitdir.remote(REMOTE_NAME)
-            gitdir.delete_remote(remote)
-        except (ValueError, git.exc.GitCommandError):
-            pass
+            init_repo(repo, workdir)
+        except git.exc.GitCommandError as e:
+            print str(e)
+            failed.append(repo)
+    if failed:
+        print_failed(failed)
 
-        gitdir.git.remote("add", "--mirror", REMOTE_NAME, url)
-
+def fetch_repo(repo, workdir):
+    path = get_repo_path(repo.name, workdir)
+    # Initialize if it doesn't exist
+    if not os.path.exists(path):
+        init_repo(repo, workdir)
+    # Create accessor
+    gitdir = git.Repo.init(path, bare=True)
+    # Log about it
+    print ("Fetching %s..." % (repo.name))
+    # Perform the fetch
+    gitdir.git.fetch(REMOTE_NAME)
 
 def fetch(repos, workdir):
+    failed = []
     for repo in repos:
-        path = get_repo_path(repo.name, workdir)
-        gitdir = git.Repo.init(path, bare=True)
-        print ("Fetching %s in %s..." % (repo.ssh_url, path))
-        gitdir.git.fetch(REMOTE_NAME)
+        try:
+            fetch_repo(repo, workdir)
+        except git.exc.GitCommandError as e:
+            print str(e)
+            failed.append(repo)
+    if failed:
+        print_failed(failed)
