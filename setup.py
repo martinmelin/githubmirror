@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='githubmirror',
-    version='0.3.5',
+    version='0.3.6',
     packages=['githubmirror', ],
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     description='A small script to keep a copy of every repo in a Github org.',
