@@ -44,14 +44,13 @@ def get_github_client(workdir):
 
 def get_organization(organization_name, workdir):
     gh = get_github_client(workdir)
-    org = None
-    while not org:
-        try:
-            org = gh.get_organization(organization_name)
-        except github.GithubException as e:
-            print >>sys.stderr, "Github error: %s" % e
-            setup_config_file(workdir)
-    return org
+    try:
+        return gh.get_organization(organization_name)
+    except github.GithubException as e:
+        print >>sys.stderr, "Github error: %s" % e
+    except Exception as e:
+        print >>sys.stderr, "Unexpected error: %s" % e
+    raise SystemExit
 
 
 def expand_workdir(workdir):
